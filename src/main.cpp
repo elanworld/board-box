@@ -1,9 +1,11 @@
 #include <Arduino.h>
+#include <http_client.h>
  
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   pinMode(21, OUTPUT);
+  setup(0);
 }
  
 void loop() {
@@ -13,4 +15,5 @@ void loop() {
   delay(1000);                       // wait for a second
   digitalWrite(21, LOW);    // turn the LED off by making the voltage LOW
   delay(1000);
+  loop(0);
 }
