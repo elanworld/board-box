@@ -1,19 +1,82 @@
+/*
+ * WebSocketClient.ino
+ *
+ *  Created on: 24.05.2015
+ *
+ */
+
 #include <Arduino.h>
-#include <http_client.h>
- 
+#include <WebSocketsClient.h>
+#include <WiFiMulti.h>
+#include <cJSON.h>
+
+WiFiMulti WiFiMulti;
+WebSocketsClient webSocket;
+
+typedef char unit8_t;
+
+void digitalWriter(uint8_t* payload) {
+  try {
+    cJSON* res;
+    res = cJSON_Parse(reinterpret_cast<char*>(payload));
+    int switch1 = cJSON_GetObjectItem(res, "switch1")->valueint;
+    digitalWrite(21, switch1);
+  } catch (...) {
+    Serial.println("操作失败！");
+  }
+}
+
+void webSocketEvent(WStype_t type, uint8_t* payload, size_t length) {
+  switch (type) {
+    case WStype_DISCONNECTED:
+      Serial.printf("[WSc] Disconnected!\n");
+      break;
+    case WStype_CONNECTED:
+      Serial.printf("[WSc] Connected to url: %s\n", payload);
+      webSocket.sendTXT("hello,i am board");
+      break;
+    case WStype_TEXT:
+      Serial.printf("[WSc] get text: %s\n", payload);
+      digitalWriter(payload);
+      webSocket.sendTXT("got it!");
+      break;
+    case WStype_ERROR:
+    case WStype_FRAGMENT_TEXT_START:
+    case WStype_FRAGMENT_BIN_START:
+    case WStype_FRAGMENT:
+    case WStype_FRAGMENT_FIN:
+      break;
+  }
+}
+
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);
+  Serial.println();
+  Serial.println();
+  Serial.println();
+  Serial.printf("start...\n");
   pinMode(21, OUTPUT);
-  setup(0);
+
+  for (uint8_t t = 4; t > 0; t--) {
+    Serial.printf("[SETUP] BOOT WAIT %d...\n", t);
+    Serial.flush();
+    delay(1000);
+  }
+
+  WiFiMulti.addAP("PDCN", "248366796");
+
+  while (WiFiMulti.run() != WL_CONNECTED) {
+    delay(100);
+  }
+
+  // server address, port and URL
+  webSocket.begin("192.168.123.158", 8030, "/");
+
+  // event handler
+  webSocket.onEvent(webSocketEvent);
+
+  // try ever 5000 again if connection has failed
+  webSocket.setReconnectInterval(5000);
 }
- 
-void loop() {
-  // put your main code here, to run repeatedly:
-  Serial.println("loop...");
-  digitalWrite(21, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(1000);                       // wait for a second
-  digitalWrite(21, LOW);    // turn the LED off by making the voltage LOW
-  delay(1000);
-  loop(0);
-}
+
+void loop() { webSocket.loop(); }
