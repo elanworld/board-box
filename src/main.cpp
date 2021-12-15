@@ -40,12 +40,16 @@ void webSocketEvent(WStype_t type, uint8_t* payload, size_t length) {
       digitalWriter(payload);
       webSocket.sendTXT("got it!");
       break;
+    case WStype_BIN:
+      Serial.printf("[WSc] get bin: %s\n", payload);
     case WStype_ERROR:
     case WStype_FRAGMENT_TEXT_START:
     case WStype_FRAGMENT_BIN_START:
     case WStype_FRAGMENT:
     case WStype_FRAGMENT_FIN:
       break;
+    default: 
+      Serial.printf("[WSc] get: %s\n", payload);
   }
 }
 
@@ -70,7 +74,7 @@ void setup() {
   }
 
   // server address, port and URL
-  webSocket.begin("192.168.123.158", 8030, "/");
+  webSocket.begin("139.155.245.132", 8030, "/board");
 
   // event handler
   webSocket.onEvent(webSocketEvent);
