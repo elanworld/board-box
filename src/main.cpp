@@ -1,86 +1,9 @@
-/*
- * WebSocketClient.ino
- *
- *  Created on: 24.05.2015
- *
- */
-
-#include <Arduino.h>
-#include <WebSocketsClient.h>
-#include <WiFiMulti.h>
-#include <cJSON.h>
-
-WiFiMulti WiFiMulti;
-WebSocketsClient webSocket;
-
-typedef char unit8_t;
-
-void digitalWriter(uint8_t* payload) {
-  try {
-    cJSON* res;
-    res = cJSON_Parse(reinterpret_cast<char*>(payload));
-    int switch1 = cJSON_GetObjectItem(res, "switch1")->valueint;
-    digitalWrite(21, switch1);
-  } catch (...) {
-    Serial.println("操作失败！");
-  }
-}
-
-void webSocketEvent(WStype_t type, uint8_t* payload, size_t length) {
-  switch (type) {
-    case WStype_DISCONNECTED:
-      Serial.printf("[WSc] Disconnected!\n");
-      break;
-    case WStype_CONNECTED:
-      Serial.printf("[WSc] Connected to url: %s\n", payload);
-      webSocket.sendTXT("hello,i am board");
-      break;
-    case WStype_TEXT:
-      Serial.printf("[WSc] get text: %s\n", payload);
-      digitalWriter(payload);
-      webSocket.sendTXT("got it!");
-      break;
-    case WStype_BIN:
-      Serial.printf("[WSc] get bin: %s\n", payload);
-    case WStype_ERROR:
-    case WStype_FRAGMENT_TEXT_START:
-    case WStype_FRAGMENT_BIN_START:
-    case WStype_FRAGMENT:
-    case WStype_FRAGMENT_FIN:
-      break;
-    default: 
-      Serial.printf("[WSc] get: %s\n", payload);
-  }
-}
+#include "BemfaApp.h"
 
 void setup() {
-  Serial.begin(115200);
-  Serial.println();
-  Serial.println();
-  Serial.println();
-  Serial.printf("start...\n");
-  pinMode(21, OUTPUT);
-
-  for (uint8_t t = 4; t > 0; t--) {
-    Serial.printf("[SETUP] BOOT WAIT %d...\n", t);
-    Serial.flush();
-    delay(1000);
-  }
-
-  WiFiMulti.addAP("PDCN", "248366796");
-
-  while (WiFiMulti.run() != WL_CONNECTED) {
-    delay(100);
-  }
-
-  // server address, port and URL
-  webSocket.begin("139.155.245.132", 8030, "/board");
-
-  // event handler
-  webSocket.onEvent(webSocketEvent);
-
-  // try ever 5000 again if connection has failed
-  webSocket.setReconnectInterval(5000);
+    setup(0);
 }
 
-void loop() { webSocket.loop(); }
+void loop() {
+    loop(0);
+}
