@@ -14,7 +14,7 @@
 const char* ssid = wifiSsid;           //修改，你的路由去WIFI名字
 const char* password = wifiPasswd;     //你的WIFI密码
 const char * ID_MQTT = bafaToken;     //用户私钥，控制台获取
-const char*  topic = "light002";        //主题名字，可在巴法云控制台自行创建，名称随意
+const char*  topic = bafaTopic;        //主题名字，可在巴法云控制台自行创建，名称随意
 const int B_led = gpio21;       //单片机LED引脚值，D系列是NodeMcu引脚命名方式，其他esp8266型号将D2改为自己的引脚
 //**************************************************//
 
