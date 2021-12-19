@@ -9,13 +9,14 @@
 #include <WiFi.h>               //默认，加载WIFI头文件
 #include "PubSubClient.h"              //默认，加载MQTT库文件
 #include "Common.h"
+#include "ApWifiConfig.h"
 
 //********************需要修改的部分*******************//
 const char* ssid = wifiSsid;           //修改，你的路由去WIFI名字
 const char* password = wifiPasswd;     //你的WIFI密码
 const char * ID_MQTT = bafaToken;     //用户私钥，控制台获取
 const char*  topic = bafaTopic;        //主题名字，可在巴法云控制台自行创建，名称随意
-const int B_led = gpio21;       //单片机LED引脚值，D系列是NodeMcu引脚命名方式，其他esp8266型号将D2改为自己的引脚
+const int gpio = switch001;       //单片机LED引脚值，D系列是NodeMcu引脚命名方式，其他esp8266型号将D2改为自己的引脚
 //**************************************************//
 
 const char* mqtt_server = "bemfa.com"; //默认，MQTT服务器
@@ -69,10 +70,8 @@ void reconnect() {
 
 
 void setup(int _) {
-  Serial.begin(115200);     //设置波特率115200
-  pinMode(B_led, OUTPUT); //设置引脚为输出模式
-  digitalWrite(B_led, HIGH);//默认引脚上电高电平
-  setupWifi();           //设置wifi的函数，连接wifi
+  pinMode(gpio, OUTPUT); //设置引脚为输出模式
+  apWifiConfig();           //设置wifi的函数，连接wifi
   client.setServer(mqtt_server, mqtt_server_port);//设置mqtt服务器
   client.setCallback(callback); //mqtt消息处理
   
@@ -87,11 +86,11 @@ void loop(int _) {
 
 //打开灯泡
 void turnOnLed() {
-  Serial.println("low level");
-  digitalWrite(B_led, LOW);
+  Serial.println("high level");
+  digitalWrite(gpio, HIGH);
 }
 //关闭灯泡
 void turnOffLed() {
-  Serial.println("high level");
-  digitalWrite(B_led, HIGH);
+  Serial.println("low level");
+  digitalWrite(gpio, LOW);
 }
