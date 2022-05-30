@@ -25,9 +25,8 @@ bool setupWifi(const char* ssid, const char* passwd) {
     }
   }
   Serial.println();
-  Serial.print("IP address: ");
+  Serial.print("IP address:");
   Serial.println(WiFi.localIP());
-  Serial.println();
   return true;
 }
 

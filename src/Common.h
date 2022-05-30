@@ -7,6 +7,7 @@
 #define bafaTopic "switch001"
 #define switch001 26
 #define ServerAddr "139.155.245.132"
+#define ServerMqttPort 8883
 #define launchBoxPort 8030
 #define launchBoxWebSocketUrl "/board"
 
